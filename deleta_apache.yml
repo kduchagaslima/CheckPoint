@@ -1,0 +1,12 @@
+---
+- name: REMOVE OJETO APACHE
+  hosts: localhost
+  gather_facts: no
+  
+  tasks:
+    - include: tasks/login.yml
+    - include: tasks/remove_fromgroup.yml
+    - include: tasks/remove_host.yml
+    - include: tasks/publish.yml
+    - include: tasks/logout.yml
+    

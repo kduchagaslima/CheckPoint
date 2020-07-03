@@ -1,0 +1,8 @@
+- name: "REMOVENDO HOST DO GRUPO"
+  check_point_mgmt:
+    command: set-group
+    parameters:
+      name: "{{ GRP_BLOCK_WAN }}"
+      members:
+        remove: "ROBO_{{ IP }}"
+    session-data: "{{ login_response }}"

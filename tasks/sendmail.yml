@@ -1,0 +1,16 @@
+- name: "Enviando email com os dados da VPN"
+  mail:
+    host: "{{ MAILSERVER }}"
+    port: 25
+    subject: SUPORTE - CCEE 
+    body: "{{ lookup('template', '{{ MAIL_TEMPLATE }}') }}"
+    secure: never
+    subtype: html
+    from: SUPORTE <source@example.com>
+    to: destination@example.com
+    cc: 
+    - SQUAD <mysquad@example.com>
+    headers:
+    - Reply-To=no-repply@example.com
+    - X-Special="Envio automático"
+  delegate_to: localhost

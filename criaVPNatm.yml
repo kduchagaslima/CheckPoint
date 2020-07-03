@@ -1,0 +1,26 @@
+---
+- name: Criação de VPN automatizado
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - include: tasks/login.yml
+    - include: tasks/cria_VPN.yml
+
+- name: Cria GTW
+  hosts: all
+  gather_facts: no
+  tasks:
+    - include: tasks/createGTW.yml
+
+- name: Adiciona GTW a comunidade
+  hosts: localhost  
+  tasks:
+    - set_fact:
+        PSK: "{{ GPSK }}"  
+    - include: tasks/login.yml
+    - include: tasks/addGTWcommunity.yml
+    - include: tasks/publish.yml
+    - include: tasks/logout.yml
+    - include: tasks/sendmail.yml
+    - include: tasks/insertDB.yml

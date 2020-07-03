@@ -1,0 +1,10 @@
+- name: "LOGIN"
+  check_point_mgmt:
+    command: login
+    parameters:
+      username: "{{ mgmt_user }}"
+      password: "{{ mgmt_password }}"
+      management: "{{ mgmt_server }}"
+      port: 4443
+    fingerprint: "{{ FINGERPRINT }}"
+  register: login_response

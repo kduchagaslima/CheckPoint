@@ -1,0 +1,7 @@
+- name: "INSTALANDO POLÍTICA"
+  check_point_mgmt:
+    command: install-policy
+    parameters:
+      policy-package: "Policy_FW_Consolidado"
+      targets: "FW-Cluster-Interno"
+    session-data: "{{ login_response }}"

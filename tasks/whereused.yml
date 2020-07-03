@@ -1,0 +1,13 @@
+- name: "BUSCANDO OBJETO"
+  check_point_mgmt:
+    command: where-used
+    parameters:
+      name: "{{ NETWORK }}"
+    session-data: "{{ login_response }}"
+  register: result
+
+- set_fact:
+    old_VPN_COMMUNITY: "{{ result | json_query('response.\"used-directly\".objects[0].name')}}"
+   
+- debug: 
+    var: old_VPN_COMMUNITY

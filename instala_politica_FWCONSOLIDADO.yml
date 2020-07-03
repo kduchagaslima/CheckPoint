@@ -1,0 +1,8 @@
+---
+- name: INSTALA POLÍTICA FW Consolidado
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - include: tasks/login.yml
+    - include: tasks/installPolicyConsolidado.yml
+    - include: tasks/logout.yml

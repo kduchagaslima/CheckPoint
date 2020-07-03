@@ -1,0 +1,5 @@
+- name: "LOGOUT DA SESSÃO"    
+  check_point_mgmt:
+    command: logout
+    parameters:
+    session-data: "{{ login_response }}"

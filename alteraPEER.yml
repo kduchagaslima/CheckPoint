@@ -1,0 +1,61 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+  - name: "CONSULTANDO PEER"
+    shell: echo "query network_objects ipaddr='{{ PEER }}'" > /tmp/consultaPeer.txt
+
+  - name: EXECUTA DBEDIT NA MANAGER
+    shell: dbedit -local -f /tmp/consultaPeer.txt
+    register: out
+
+  - name: CRIA TXT PARA DBEDIT
+    shell: |
+      echo "modify network_objects {{ NETWORK }} ipaddr {{ PEER }}
+      quit -update_all" > /tmp/dbedit.txt
+    when: out.stdout == ""
+  
+  - name: EXECUTA DBEDIT NA MANAGER
+    shell: dbedit -local -f /tmp/dbedit.txt   
+    when: out.stdout == ""
+
+- hosts: localhost
+  gather_facts: no
+  tasks: 
+  - name: Atualiza CATDB
+    shell: |
+      echo "#!/bin/bash
+      sqlplus -s "{{userdb}}/{{passdb}}@{{database}}:1521/{{database}}" <<!
+      set pagesize 0;
+      set echo off;
+      set feedback off;
+      set heading off;
+      set serveroutput on size 1000000;
+      set lines 1000;
+      spool /tmp/ins_vp.sql;
+      DECLARE
+          V_SQLERRM VARCHAR2(4000);
+      BEGIN
+          UPDATE SYSANSIBLE.TB_VPN_AGENTES_AES256 SET IP_PEER=TRIM('{{ PEER }}') WHERE IP_PEER=TRIM('{{ OLD_PEER }}');
+          UPDATE SYSANSIBLE.TB_VPN_AGENTES_3DES SET IP_PEER=TRIM('{{ PEER }}') WHERE IP_PEER=TRIM('{{ OLD_PEER }}');
+      EXCEPTION WHEN OTHERS THEN
+          V_SQLERRM := SQLERRM;
+          BEGIN
+              INSERT INTO SYSANSIBLE.TB_VPN_INSERT_ERRO VALUES (SYSTIMESTAMP, TRIM('{{ PEER }}')||V_SQLERRM);
+          EXCEPTION WHEN OTHERS THEN
+              INSERT INTO SYSANSIBLE.TB_VPN_INSERT_ERRO VALUES (SYSTIMESTAMP, V_SQLERRM);
+          END;
+      END;
+      /
+      COMMIT;
+      spool off;
+      exit;
+      !" > /tmp/sql.sh
+    delegate_to: pxrs01
+  
+  - name: Executando sql no banco
+    command: /tmp/sql.sh
+    register: output
+    ignore_errors: yes
+    delegate_to: pxrs01    

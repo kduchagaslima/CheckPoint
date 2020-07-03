@@ -1,0 +1,26 @@
+---
+- name: Teste adicionar comentário num alarme do MIS
+  hosts: all
+  gather_facts: no
+  tasks: 
+  - name: Acknowledge alert 
+    become: false
+    local_action:
+      module: zabbix_ack
+      server_url: "{{ server_url }}"
+      login_user: "{{ login_user }}"
+      login_password: "{{ login_password }}"
+      eventid: "{{ eventid }}"
+      message: "Remediation attempted via Ansible Playbook"
+      close_event: False
+#    delegate_to: pxrs01
+#  - name: Acknowledge alert
+#    zabbix_action:
+#      server_url: "{{ server_url }}"
+#      login_user: "{{ login_user }}"
+#      login_password: "{{ login_password }}"
+#      name: "Acknowledge alert"
+#      event_acknowledge:
+#        eventid: "{{ eventid }}"
+#        action: 6
+#        acknowledge_default_message: "Remediation attempted via Ansible Playbook"

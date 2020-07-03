@@ -1,0 +1,31 @@
+- name: CRIANDO QUERY PARA SER EXECUTADA NO DBEDIT
+  shell: echo "query network_objects ipaddr='{{ PEER }}'" > /tmp/consultaPeer.txt
+
+- name: EXECUTANDO DBEDIT NA MANAGER
+  shell: dbedit -local -f /tmp/consultaPeer.txt
+  register: out
+  
+- set_fact:
+    nomeVPN: "{{ out.stdout | regex_search(regexp,'\\1') | first }}"
+  vars:
+    regexp: 'Object Name: (\w+)'
+
+- name: CRIANDO QUERY PARA SER EXECUTADA NO DBEDIT
+  shell: echo "whereused network_objects {{ nomeVPN }}" > /tmp/whereusedPEER.txt
+
+- name: EXECUTANDO DBEDIT NA MANAGER
+  shell: dbedit -local -f /tmp/whereusedPEER.txt
+  register: result
+
+- set_fact:
+    communityVPN: "{{ result.stdout | regex_search(regexp,'\\1') | first }}"
+  vars:
+    regexp: 'referral_obj: Name: (\w+)'
+
+- name: "MOSTRANDO RESULTADO DA BUSCA PELO NOME DO PEER"
+  debug:
+    var: nomeVPN
+
+- name: "MOSTRANDO RESULTADO DA BUSCA PELO NOME DA COMUNIDADE DE VPN"
+  debug:
+    var: communityVPN

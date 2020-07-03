@@ -1,0 +1,12 @@
+- name: "ADICIONANDO GTW A COMUNIDADE DE VPN"
+  check_point_mgmt:
+    command: set-vpn-community-star
+    parameters: 
+      name: "{{ VPN_COMUNITY }}"
+      satellite-gateways: 
+        add: "{{ NETWORK }}"
+      shared-secrets: 
+        add:
+          external-gateway: "{{ NETWORK }}"
+          shared-secret: "{{ PSK }}"      
+    session-data: "{{ login_response }}"

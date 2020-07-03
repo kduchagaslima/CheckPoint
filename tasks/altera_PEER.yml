@@ -1,0 +1,7 @@
+- name: CRIA TXT PARA DBEDIT
+  shell: |
+    echo "modify network_objects {{ NETWORK }} ipaddr {{ PEER }}
+    quit -update_all" > /tmp/dbedit.txt
+
+- name: EXECUTA DBEDIT NA MANAGER
+  shell: dbedit -local -f /tmp/dbedit.txt    

@@ -1,0 +1,13 @@
+- name: PPR limpeza de VPN's INATIVAS
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - include: tasks/login.yml
+  - include: tasks/delGTWcommunity.yml
+    vars:
+      NETWORK: "{{ item }}"
+    with_items: "{{ lista_GTW }}"
+
+  - include: tasks/publish.yml
+  - include: tasks/logout.yml

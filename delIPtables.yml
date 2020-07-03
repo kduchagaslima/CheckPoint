@@ -1,0 +1,13 @@
+---
+- name: Permite specific IP
+  hosts: WEBSERVER
+  gather_facts: no
+  become: yes
+  become_method: sudo  
+  tasks:
+    - name: Allow specific IP
+      iptables:
+        chain: INPUT
+        source: "{{ IP }}"
+        jump: DROP
+        state: absent

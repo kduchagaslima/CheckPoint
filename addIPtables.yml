@@ -1,0 +1,12 @@
+---
+- name: Block specific IP
+  hosts: WEBSERVER
+  gather_facts: no
+  become: yes
+  become_method: sudo  
+  tasks:
+    - name: Block specific IP
+      iptables:
+        chain: INPUT
+        source: "{{ IP }}"
+        jump: DROP

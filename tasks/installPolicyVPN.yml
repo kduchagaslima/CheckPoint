@@ -1,0 +1,10 @@
+- name: "INSTALANDO POLÍTICA"
+  check_point_mgmt:
+    command: install-policy
+    parameters:
+      policy-package: "Policy_FW_Sinercom_VPN"
+      targets: "VPN-Cluster"
+      install-on-all-cluster-members-or-fail: false
+#      threat-prevention: false
+#      desktop-security: false
+    session-data: "{{ login_response }}"

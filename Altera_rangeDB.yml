@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks: 
+  - name: Atualiza CATDB
+    shell: |
+      echo "#!/bin/bash
+      sqlplus -s "{{userdb}}/{{passdb}}@{{database}}:1521/{{database}}" <<!
+      set pagesize 0;
+      set echo off;
+      set feedback off;
+      set heading off;
+      set serveroutput on size 1000000;
+      set lines 1000;
+      spool /tmp/ins_vp.sql;
+      DECLARE
+          V_SQLERRM VARCHAR2(4000);
+      BEGIN
+          UPDATE SYSANSIBLE.TB_VPN_AGENTES_AES256 SET REDE_IP_X_IP_TESTE=TRIM('{{ NET_ID }}') WHERE IP_PEER=TRIM('{{ PEER }}');
+          UPDATE SYSANSIBLE.TB_VPN_AGENTES_AES256 SET IP_RANGE=TRIM('{{ IP_RANGE }}') WHERE IP_PEER=TRIM('{{ PEER }}');
+          UPDATE SYSANSIBLE.TB_VPN_AGENTES_3DES SET REDE_IP_X_IP_TESTE=TRIM('{{ NET_ID }}') WHERE IP_PEER=TRIM('{{ PEER }}');
+          UPDATE SYSANSIBLE.TB_VPN_AGENTES_3DES SET IP_RANGE=TRIM('{{ IP_RANGE }}') WHERE IP_PEER=TRIM('{{ PEER }}');
+      EXCEPTION WHEN OTHERS THEN
+          V_SQLERRM := SQLERRM;
+          BEGIN
+              INSERT INTO SYSANSIBLE.TB_VPN_INSERT_ERRO VALUES (SYSTIMESTAMP, TRIM('{{ PEER }}')||V_SQLERRM);
+          EXCEPTION WHEN OTHERS THEN
+              INSERT INTO SYSANSIBLE.TB_VPN_INSERT_ERRO VALUES (SYSTIMESTAMP, V_SQLERRM);
+          END;
+      END;
+      /
+      COMMIT;
+      spool off;
+      exit;
+      !" > /tmp/sql.sh
+    delegate_to: pxrs01
+  
+  - name: Executando sql no banco
+    command: /tmp/sql.sh
+    register: output
+    ignore_errors: yes
+    delegate_to: pxrs01        

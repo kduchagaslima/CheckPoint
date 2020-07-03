@@ -1,0 +1,4 @@
+- name: "PUBLISH"
+  check_point_mgmt:
+    command: publish
+    session-data: "{{ login_response }}"

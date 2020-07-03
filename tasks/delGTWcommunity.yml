@@ -1,0 +1,8 @@
+- name: "REMOVENDO GTW DA COMUNIDADE DE VPN"
+  check_point_mgmt:
+    command: set-vpn-community-star
+    parameters: 
+      name: "{{ VPN_COMUNITY }}"
+      satellite-gateways: 
+        remove: "{{ NETWORK }}"
+    session-data: "{{ login_response }}"   

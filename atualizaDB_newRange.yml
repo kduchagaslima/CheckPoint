@@ -1,0 +1,80 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+
+  - name: Criando a consulta no Banco
+    shell: |
+      echo "#!/bin/bash
+      sqlplus -s "{{userdb}}/{{passdb}}@{{database}}:1521/{{database}}" <<!
+      set pagesize 0;
+      set echo off;
+      set feedback off;
+      set heading off;
+      set serveroutput on size 1000000;
+      set lines 1000;
+      spool /tmp/ins_vp.sql;
+      DECLARE
+          V_SQLERRM VARCHAR2(4000);
+      BEGIN
+          IF '{{ VPN_CRIPTO }}' = '3DES' THEN
+              INSERT INTO SYSANSIBLE.TB_VPN_AGENTES_3DES
+              SELECT SYSANSIBLE.SEQ_TB_VPN_AGENTES_3DES.NEXTVAL
+                    ,TRIM('VPN_{{ NETWORK }}')
+                    ,AGENTE_PADRONIZADO_COM_GMO
+                    ,AGENTE_PRE_PADRONIZACAO
+                    ,CONTATO
+                    ,PROVEDOR
+                    ,CONTATO2
+                    ,SYSDATE
+                    ,STATUS
+                    ,EQUIPAMENTO
+                    ,IP_PEER
+                    ,PRE_SHARED_KEY
+                    ,TRIM('{{ NET_ID }}')
+                    ,TRIM('{{ IP_RANGE }}')
+                    ,MEDIDOR_SERVICO
+                    ,ULTIMO_CONTATO
+                    ,OBSERVACAO
+                    FROM SYSANSIBLE.TB_VPN_AGENTES_3DES
+                    WHERE IP_PEER = '{{ PEER }}' 
+                    AND ID = (SELECT MAX(ID) FROM SYSANSIBLE.TB_VPN_AGENTES_3DES WHERE IP_PEER = '{{ PEER }}') ;
+          ELSE
+              INSERT INTO SYSANSIBLE.TB_VPN_AGENTES_AES256
+              SELECT SYSANSIBLE.SEQ_TB_VPN_AGENTES_AES256.NEXTVAL
+                    ,TRIM('VPN_{{ NETWORK }}')
+                    ,AGENTE_PADRONIZADO_COM_GMO
+                    ,AGENTE_PRE_PADRONIZACAO
+                    ,CONTATO
+                    ,SYSDATE
+                    ,STATUS
+                    ,EQUIPAMENTO
+                    ,IP_PEER
+                    ,PRE_SHARED_KEY
+                    ,TRIM('{{ NET_ID }}')
+                    ,TRIM('{{ IP_RANGE }}')
+                    ,OBSERVACAO
+                    FROM SYSANSIBLE.TB_VPN_AGENTES_AES256
+                    WHERE IP_PEER = '{{ PEER }}'
+                    AND ID = (SELECT MAX(ID) FROM SYSANSIBLE.TB_VPN_AGENTES_AES256 WHERE IP_PEER = '{{ PEER }}') ;
+          END IF; 
+      EXCEPTION WHEN OTHERS THEN
+          V_SQLERRM := SQLERRM;
+          BEGIN
+              INSERT INTO SYSANSIBLE.TB_VPN_INSERT_ERRO VALUES (SYSTIMESTAMP, 'VPN_{{ NETWORK }}'||V_SQLERRM);
+          EXCEPTION WHEN OTHERS THEN
+              INSERT INTO SYSANSIBLE.TB_VPN_INSERT_ERRO VALUES (SYSTIMESTAMP, V_SQLERRM);
+          END;
+      END;
+      /
+      COMMIT;
+      spool off;
+      exit;
+      !" > /tmp/sql.sh
+    delegate_to: pxrs01
+  
+  - name: Executando sql no banco
+    command: /tmp/sql.sh
+    register: output
+    ignore_errors: yes
+    delegate_to: pxrs01

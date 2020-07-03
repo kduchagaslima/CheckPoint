@@ -1,0 +1,7 @@
+- name: "DELETANDO OBJETO"
+  check_point_mgmt:
+    command: delete-host
+    parameters:
+      name: "ROBO_{{ IP }}"
+      ignore-warnings: true
+    session-data: "{{ login_response }}"

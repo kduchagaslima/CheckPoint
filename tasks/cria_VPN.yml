@@ -1,0 +1,38 @@
+- name: "CRIANDO REDE DE VPN"
+  check_point_mgmt:
+    command: add-network
+    parameters:
+      name: "VPN_{{ NETWORK }}"
+      subnet: "{{ NET_ID }}"
+      mask-length: "{{ NET_LGT }}"
+      color: "light green"
+      comments: "Rede de VPN_{{ NETWORK }}"
+      groups: "GRP_NO_VPN_AGENTES"
+    session-data: "{{ login_response }}"
+- name: "CRIANDO GRUPO DE REDE DE VPN"
+  check_point_mgmt:
+    command: add-group
+    parameters:
+      name: "GRP_{{ NETWORK }}"
+      color: "crete blue"
+    session-data: "{{ login_response }}"
+- name: "ADICIONANDO REDE AO GRUPO"
+  check_point_mgmt:
+    command: set-group
+    parameters:
+      name: "GRP_{{ NETWORK }}"
+      members:
+        add:
+          - "VPN_{{ NETWORK }}"
+    session-data: "{{ login_response }}"
+- name: "PUBLICANDO CRIAÇÃO"
+  check_point_mgmt:
+    command: publish
+    parameters:
+    session-data: "{{ login_response }}"
+
+- name: "LOGOUT DA SESSÃO"    
+  check_point_mgmt:
+    command: logout
+    parameters:
+    session-data: "{{ login_response }}"

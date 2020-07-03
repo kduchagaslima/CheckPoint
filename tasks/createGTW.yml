@@ -1,0 +1,17 @@
+- name: CRIA TXT PARA DBEDIT
+  shell: |
+    echo "create gateway_plain {{ NETWORK }}
+    modify network_objects {{ NETWORK }} DAG false
+    modify network_objects {{ NETWORK }} color orange
+    modify network_objects {{ NETWORK }} VPN VPN
+    modify network_objects {{ NETWORK }} VPN:third_party_encryption true
+    modify network_objects {{ NETWORK }} SNMP NULL
+    modify network_objects {{ NETWORK }} type gateway
+    modify network_objects {{ NETWORK }} add_adtr_rule false
+    modify network_objects {{ NETWORK }} ipaddr {{ PEER }}
+    modify network_objects {{ NETWORK }} encdomain manual
+    modify network_objects {{ NETWORK }} manual_encdomain network_objects:GRP_{{ NETWORK }}
+    quit -update_all" > /tmp/dbedit.txt
+
+- name: EXECUTA DBEDIT NA MANAGER
+  shell: dbedit -local -f /tmp/dbedit.txt 

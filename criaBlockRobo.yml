@@ -1,0 +1,9 @@
+---
+- name: Bloqueio de IP's detectados com mais de 100 acesso nos apaches
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - include: tasks/login.yml
+    - include: tasks/addhost.yml
+    - include: tasks/publish.yml
+    - include: tasks/logout.yml

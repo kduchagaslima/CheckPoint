@@ -1,0 +1,8 @@
+---
+- name: INSTALA POLÍTICA FW VPN
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - include: tasks/login.yml
+    - include: tasks/installPolicyVPN.yml
+    - include: tasks/logout.yml

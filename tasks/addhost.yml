@@ -1,0 +1,9 @@
+- name: "CRIANDO OBJETO ROBO"
+  check_point_mgmt:
+    command: add-host
+    parameters:
+      name: "ROBO_{{ IP }}"
+      ip-address: "{{ IP }}"
+      color: "black"
+      groups: "GRP_NO_BLOCK_WAN_II"
+    session-data: "{{ login_response }}"
