@@ -7,7 +7,7 @@
       mask-length: "{{ NET_LGT }}"
       color: "light green"
       comments: "Rede de VPN_{{ NETWORK }}"
-      groups: "GRP_NO_VPN_AGENTES"
+      groups: "{{DEFAULT_GROUP}}"
     session-data: "{{ login_response }}"
 - name: "CRIANDO GRUPO DE REDE DE VPN"
   check_point_mgmt:
