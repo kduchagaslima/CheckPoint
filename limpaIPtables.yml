@@ -15,5 +15,5 @@
     - name: Adicionando Zabbix na lista de exceção
       iptables:
         chain: INPUT
-        source: 10.50.1.105
+        source: "{{zabbixSERVer}}"
         jump: ACCEPT
