@@ -45,10 +45,10 @@
       spool off;
       exit;
       !" > /tmp/sql.sh
-    delegate_to: pxrs01
+    delegate_to: "{{server_with_sqlpus_installed}}"
   
   - name: Executando sql no banco
     command: /tmp/sql.sh
     register: output
     ignore_errors: yes
-    delegate_to: pxrs01        
+    delegate_to: "{{server_with_sqlpus_installed}}"        
